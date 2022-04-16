@@ -6,7 +6,6 @@ import android.appwidget.AppWidgetProvider
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
-import android.location.LocationManager
 import android.widget.RemoteViews
 import androidx.lifecycle.*
 import com.maden.makewidget.model.count_model.CountModel
@@ -14,7 +13,6 @@ import com.maden.makewidget.service.BackgroundRepo
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-
 
 private const val ON_CLICK_TAG = "ON_CLICK_TAG"
 
@@ -27,10 +25,6 @@ open class RandomWidget : AppWidgetProvider(), LifecycleObserver {
         appWidgetManager: AppWidgetManager,
         appWidgetIds: IntArray
     ) {
-        // There may be multiple widgets active, so update all of them
-        for (appWidgetId in appWidgetIds) {
-            //updateAppWidget(context, appWidgetManager, appWidgetId)
-        }
 
         val count = appWidgetIds.size
         appWidgetIdArray = appWidgetIds
@@ -87,7 +81,6 @@ open class RandomWidget : AppWidgetProvider(), LifecycleObserver {
         val remoteViews = RemoteViews(context.packageName, R.layout.random_widget)
         if (intent.action == ON_CLICK_TAG) {
 
-            println("asdasdsad")
             val repo = BackgroundRepo()
             CoroutineScope(Dispatchers.IO).launch {
                 val auth = repo.login()
@@ -95,11 +88,26 @@ open class RandomWidget : AppWidgetProvider(), LifecycleObserver {
                     val countModel: CountModel? = repo.getCount(auth)
                     countModel?.let {
                         it.workOrderCount?.let { c ->
-                            remoteViews.setTextViewText(R.id.activeText, c.activeWorkOrderCount.toString())
-                            remoteViews.setTextViewText(R.id.completeText, c.completeWorkOrderCount.toString())
-                            remoteViews.setTextViewText(R.id.failText, c.failedWorkOrderCount.toString())
-                            remoteViews.setTextViewText(R.id.waitText, c.waitWorkOrderCount.toString())
-                            remoteViews.setTextViewText(R.id.allText, "Tümü: "+c.allWorkOrderCount.toString())
+                            remoteViews.setTextViewText(
+                                R.id.activeText,
+                                c.activeWorkOrderCount.toString()
+                            )
+                            remoteViews.setTextViewText(
+                                R.id.completeText,
+                                c.completeWorkOrderCount.toString()
+                            )
+                            remoteViews.setTextViewText(
+                                R.id.failText,
+                                c.failedWorkOrderCount.toString()
+                            )
+                            remoteViews.setTextViewText(
+                                R.id.waitText,
+                                c.waitWorkOrderCount.toString()
+                            )
+                            remoteViews.setTextViewText(
+                                R.id.allText,
+                                "Tümü: " + c.allWorkOrderCount.toString()
+                            )
                         }
                     }
                 }
@@ -114,24 +122,4 @@ open class RandomWidget : AppWidgetProvider(), LifecycleObserver {
             }
         }
     }
-
-
 }
-/*
-internal fun updateAppWidget(
-    context: Context,
-    appWidgetManager: AppWidgetManager,
-    appWidgetId: Int
-) {
-    val widgetText = loadTitlePref(context, appWidgetId)
-    // Construct the RemoteViews object
-    val views = RemoteViews(context.packageName, R.layout.random_widget)
-    Toast.makeText(context,"tasd", Toast.LENGTH_LONG).show()
-
-    views.setTextViewText(R.id.appwidget_text, "asdadasd")
-
-    // Instruct the widget manager to update the widget
-    appWidgetManager.updateAppWidget(appWidgetId, views)
-}
-
- */
